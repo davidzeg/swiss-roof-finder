@@ -26,10 +26,8 @@ const RoofMap = ({ selectedLocation }) => {
   const styleRef = useRef();
   const initialViewSetRef = useRef(false);
   const locationProcessedRef = useRef(null);
-  // Add this ref to track if we need to extract the URL state
   const initialUrlProcessedRef = useRef(false);
   
-  // Update the style function to properly style selected roofs
   styleRef.current = (feature) => {
     const isSelected = selectedRoofIds.has(feature.getId());
     return new Style({
@@ -43,7 +41,6 @@ const RoofMap = ({ selectedLocation }) => {
     });
   };
   
-  // Extract selected roofs from URL
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -71,7 +68,6 @@ const RoofMap = ({ selectedLocation }) => {
     urlUpdatedRef.current = true;
   }, []);
   
-  // Update URL and refresh vector layer when selected roofs change
   useEffect(() => {
     if (urlUpdatedRef.current && typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -90,7 +86,6 @@ const RoofMap = ({ selectedLocation }) => {
     }
   }, [selectedRoofIds]);
 
-  // Initialize map
   useEffect(() => {
     if (!mapInstanceRef.current && mapRef.current) {
       const initialCenter = fromLonLat([8.2275, 46.8182]);
@@ -155,9 +150,7 @@ const RoofMap = ({ selectedLocation }) => {
       vectorSource.on('change', () => {
         setRoofCount(vectorSource.getFeatures().length);
         
-        // KEY FIX: When source changes, check if we need to process the initial URL state
         if (!initialUrlProcessedRef.current && selectedRoofIds.size > 0) {
-          // Re-apply styles after features are loaded
           vectorLayer.changed();
           initialUrlProcessedRef.current = true;
         }
@@ -172,7 +165,6 @@ const RoofMap = ({ selectedLocation }) => {
     };
   }, []);
 
-  // Handle selected location changes
   useEffect(() => {
     if (!selectedLocation || !mapInstanceRef.current) return;
     
@@ -186,7 +178,6 @@ const RoofMap = ({ selectedLocation }) => {
     
     const extent = mapInstanceRef.current.getView().calculateExtent(mapInstanceRef.current.getSize());
     
-    // Reset the initialUrlProcessedRef when location changes to make sure we process the selected roofs
     initialUrlProcessedRef.current = false;
     fetchRoofsInArea(x, y, extent, true);
     
@@ -220,7 +211,6 @@ const RoofMap = ({ selectedLocation }) => {
     try {
       if (clearExisting && vectorSourceRef.current) {
         vectorSourceRef.current.clear();
-        // Reset the flag when clearing so we can process URL selections with new roofs
         initialUrlProcessedRef.current = false;
       }
       
@@ -236,7 +226,6 @@ const RoofMap = ({ selectedLocation }) => {
       const fetchPromises = samplePoints.map(point => fetchRoofsAtPoint(point[0], point[1]));
       await Promise.all(fetchPromises);
       
-      // After all roofs are fetched, make sure styling is applied
       if (vectorLayerRef.current) {
         vectorLayerRef.current.changed();
       }
@@ -303,9 +292,7 @@ const RoofMap = ({ selectedLocation }) => {
               
               feature.setId(featureId);
               
-              // Check if this feature should be styled as selected based on URL params
               if (selectedRoofIds.has(featureId)) {
-                // Ensure the feature gets the selected style
                 feature.changed();
               }
               
@@ -322,7 +309,6 @@ const RoofMap = ({ selectedLocation }) => {
     if (addedCount > 0) {
       console.log(`Added ${addedCount} new roofs`);
       
-      // Ensure the layer is refreshed to apply styles after adding features
       if (vectorLayerRef.current) {
         vectorLayerRef.current.changed();
       }

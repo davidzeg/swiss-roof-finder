@@ -99,3 +99,5 @@ The application integrates with the Swiss Federal Geo-Information Platform API (
    - Add tooltip information about selected buildings
    - Implement filtering options for roof types or properties
    - Add measurement tools for area calculations
+
+4. **Add Stronger TypeScript Integration**: Due to time constraints, the project is not fully strongly typed, it would definitely be something to focus on improving.

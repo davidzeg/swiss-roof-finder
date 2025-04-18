@@ -2,7 +2,9 @@ import { AppBar, Box, CssBaseline, Toolbar, Typography } from "@mui/material";
 import Head from "next/head";
 import Footer from "./Footer";
 
-export default function Layout({children}) {
+import { ReactNode } from "react";
+
+export default function Layout({ children }: { children: ReactNode }) {
     return (
         <>
             <Head>
